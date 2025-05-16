@@ -1,3 +1,3 @@
-export function multiply(a: number, b: number): number {
-  return a * b;
-}
+export * from './swiper/swiper.types';
+
+export { default } from './swiper/components/infinite-horizontal-swiper';

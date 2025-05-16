@@ -11,7 +11,7 @@ import useCards from '../hooks/use-cards';
 import useSwiperTransformStyle from '../hooks/use-swiper-transform-style';
 import useScrollToIndex from '../hooks/use-scroll-to-index';
 
-export const Swiper = forwardRef<SwiperMethods, SwiperProps>(
+export const InfiniteHorizontalSwiper = forwardRef<SwiperMethods, SwiperProps>(
   ({ renderItem, windowSize = 3 }, swiperRef) => {
     if (windowSize < 3 || windowSize % 2 === 0) {
       throw new Error('size must be an odd number greater than 1');
@@ -114,7 +114,7 @@ export const Swiper = forwardRef<SwiperMethods, SwiperProps>(
   }
 );
 
-export default Swiper;
+export default InfiniteHorizontalSwiper;
 
 const styles = StyleSheet.create({
   mainLayout: { alignSelf: 'stretch', flex: 1 },
