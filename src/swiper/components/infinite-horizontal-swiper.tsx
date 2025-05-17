@@ -1,6 +1,16 @@
-import { forwardRef, useCallback, useImperativeHandle, useState } from 'react';
+import {
+  forwardRef,
+  memo,
+  useCallback,
+  useImperativeHandle,
+  useState,
+} from 'react';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
+import Animated, {
+  useAnimatedReaction,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
 import type { SwiperMethods, SwiperProps } from '../swiper.types';
 import { ACTIVATION_DISTANCE_IN_PX } from '../lib/constants';
 import { type LayoutChangeEvent, StyleSheet, View } from 'react-native';
@@ -11,8 +21,8 @@ import useCards from '../hooks/use-cards';
 import useSwiperTransformStyle from '../hooks/use-swiper-transform-style';
 import useScrollToIndex from '../hooks/use-scroll-to-index';
 
-export const InfiniteHorizontalSwiper = forwardRef<SwiperMethods, SwiperProps>(
-  ({ renderItem, windowSize = 3 }, swiperRef) => {
+const InfiniteHorizontalSwiper = forwardRef<SwiperMethods, SwiperProps>(
+  ({ renderItem, windowSize = 3, onIndexChangedWorklet }, swiperRef) => {
     if (windowSize < 3 || windowSize % 2 === 0) {
       throw new Error('size must be an odd number greater than 1');
     }
@@ -31,6 +41,19 @@ export const InfiniteHorizontalSwiper = forwardRef<SwiperMethods, SwiperProps>(
     const finalX = useSharedValue(0);
     const contextStartX = useSharedValue(-1);
     const contextEndX = useSharedValue(-1);
+    const currentIndex = useSharedValue(-1);
+
+    useAnimatedReaction(
+      () => cardState.index.value,
+      (index) => {
+        if (!onIndexChangedWorklet || index === currentIndex.value) {
+          return;
+        }
+
+        currentIndex.value = index;
+        onIndexChangedWorklet(index);
+      }
+    );
 
     const tapGesture = Gesture.Pan()
       .activeOffsetX([-15, 15])
@@ -114,7 +137,13 @@ export const InfiniteHorizontalSwiper = forwardRef<SwiperMethods, SwiperProps>(
   }
 );
 
-export default InfiniteHorizontalSwiper;
+export default memo(InfiniteHorizontalSwiper, (prevProps, nextProps) => {
+  return (
+    prevProps.renderItem === nextProps.renderItem &&
+    prevProps.windowSize === nextProps.windowSize &&
+    prevProps.onIndexChangedWorklet === nextProps.onIndexChangedWorklet
+  );
+});
 
 const styles = StyleSheet.create({
   mainLayout: { alignSelf: 'stretch', flex: 1 },

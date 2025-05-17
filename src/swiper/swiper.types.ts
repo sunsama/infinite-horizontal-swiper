@@ -18,6 +18,11 @@ export type SwiperProps = {
    * @default 3
    */
   windowSize?: number;
+  /**
+   * When the index changes, this callback will be called with the new index.
+   * Note: This needs to be a worklet function.
+   */
+  onIndexChangedWorklet?: (index: number) => void;
 };
 
 export interface SwiperMethods {

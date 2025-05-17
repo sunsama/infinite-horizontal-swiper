@@ -1,28 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { useRef } from 'react';
+import { useCallback, useRef } from 'react';
 import InfiniteHorizontalSwiper, {
   type SwiperMethods,
 } from '@sunsama/infinite-horizontal-swiper';
-
-const renderItem = (index: number, focused: boolean) => {
-  return (
-    <View
-      style={{
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: index % 2 === 0 ? 'blue' : 'red',
-      }}
-    >
-      <Text style={{ color: 'white', fontSize: 80 }}>{index}</Text>
-      <Text style={{ color: 'white', fontSize: 30 }}>
-        {focused ? '(is focused)' : ''}
-      </Text>
-    </View>
-  );
-};
 
 export default function App() {
   const swiperRef = useRef<SwiperMethods>(null);
@@ -33,6 +15,29 @@ export default function App() {
     swiperRef2.current?.scrollToIndex(500 - Math.floor(Math.random() * 1000));
   };
 
+  const onIndexChangedWorklet = useCallback((index: number) => {
+    'worklet';
+    console.log('index changed to', index);
+  }, []);
+
+  const renderItem = useCallback((index: number, focused: boolean) => {
+    const styleView = [
+      styles.renderView,
+      {
+        backgroundColor: index % 2 === 0 ? 'blue' : 'red',
+      },
+    ];
+
+    return (
+      <View style={styleView}>
+        <Text style={styles.renderText}>{index}</Text>
+        <Text style={styles.renderTextFocused}>
+          {focused ? '(is focused)' : ''}
+        </Text>
+      </View>
+    );
+  }, []);
+
   return (
     <GestureHandlerRootView>
       <View style={styles.container}>
@@ -41,17 +46,11 @@ export default function App() {
           ref={swiperRef2}
           windowSize={5}
           renderItem={renderItem}
+          onIndexChangedWorklet={onIndexChangedWorklet}
         />
       </View>
-      <Pressable style={{ marginBottom: 30 }} onPress={onPressRandomIndex}>
-        <View
-          style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: 30,
-            alignSelf: 'stretch',
-          }}
-        >
+      <Pressable style={styles.button} onPress={onPressRandomIndex}>
+        <View style={styles.buttonView}>
           <Text>Focus Random Index</Text>
         </View>
       </Pressable>
@@ -63,6 +62,28 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  button: {
+    marginBottom: 30,
+  },
+  buttonView: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 30,
+    alignSelf: 'stretch',
+  },
+  renderText: {
+    color: 'white',
+    fontSize: 80,
+  },
+  renderTextFocused: {
+    color: 'white',
+    fontSize: 30,
+  },
+  renderView: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
