@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import determineTransition from '../worklets/determine-transition';
 import { type SharedValue, withSpring } from 'react-native-reanimated';
 import onTransferFinished from '../worklets/on-transfer-finished';
-import type { CardState } from '../hooks/use-card-state';
+import type { CardState } from '../swiper.types';
 
 const useScrollToIndex = ({
   width,

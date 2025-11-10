@@ -1,4 +1,5 @@
-import type { ReactNode } from 'react';
+import { type ReactNode } from 'react';
+import type { SharedValue } from 'react-native-reanimated';
 
 export type RenderItem = (index: number, isFocused: boolean) => ReactNode;
 
@@ -23,6 +24,12 @@ export type SwiperProps = {
    * Note: This needs to be a worklet function.
    */
   onIndexChangedWorklet?: (index: number) => void;
+  /**
+   * Represents the starting index.
+   *
+   * @default 0
+   */
+  initialIndex?: number;
 };
 
 export interface SwiperMethods {
@@ -31,3 +38,10 @@ export interface SwiperMethods {
    */
   scrollToIndex: (index: number) => void;
 }
+
+export type CardState = {
+  index: SharedValue<number>;
+  offsets: SharedValue<number>[];
+  translateX: SharedValue<number>[];
+  cardIndexes: SharedValue<number>[];
+};

@@ -47,6 +47,7 @@ export default function App() {
           windowSize={5}
           renderItem={renderItem}
           onIndexChangedWorklet={onIndexChangedWorklet}
+          initialIndex={12}
         />
       </View>
       <Pressable style={styles.button} onPress={onPressRandomIndex}>

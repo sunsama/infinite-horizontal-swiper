@@ -1,5 +1,4 @@
-import type { RenderItem } from '../swiper.types';
-import type { CardState } from '../hooks/use-card-state';
+import type { CardState, RenderItem } from '../swiper.types';
 import { useMemo } from 'react';
 import SwiperCard from '../components/swiper-card';
 

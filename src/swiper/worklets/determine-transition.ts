@@ -1,6 +1,6 @@
+import type { CardState } from '../swiper.types';
 import offsetAdd from '../worklets/offset-add';
 import offsetSub from '../worklets/offset-sub';
-import type { CardState } from '../hooks/use-card-state';
 
 function determineTransition(
   cardState: CardState,

@@ -1,27 +1,27 @@
 import { useMemo } from 'react';
-import { makeMutable, type SharedValue } from 'react-native-reanimated';
+import { makeMutable } from 'react-native-reanimated';
 
-export type CardState = {
-  index: SharedValue<number>;
-  offsets: SharedValue<number>[];
-  translateX: SharedValue<number>[];
-  cardIndexes: SharedValue<number>[];
-};
-
-const useCardState = (width: number, windowSize: number) =>
-  useMemo(() => {
+export default function useCardState({
+  initialIndex,
+  width,
+  windowSize,
+}: {
+  width: number;
+  windowSize: number;
+  initialIndex: number;
+}) {
+  return useMemo(() => {
     const half = Math.floor(windowSize / 2);
 
     return {
-      index: makeMutable<number>(0),
+      index: makeMutable<number>(initialIndex),
       offsets: Array.from({ length: windowSize }, (_, i) => makeMutable(i)),
       translateX: Array.from({ length: windowSize }, (_, i) =>
         makeMutable((i - half) * width)
       ),
       cardIndexes: Array.from({ length: windowSize }, (_, i) =>
-        makeMutable(i - half)
+        makeMutable(i + initialIndex - half)
       ),
     };
-  }, [width, windowSize]);
-
-export default useCardState;
+  }, [width, windowSize, initialIndex]);
+}

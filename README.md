@@ -47,6 +47,7 @@ Check out the app in the `example` folder for a working demo. The example app de
 | `renderItem`            | `(index: number, isFocused: boolean) => ReactNode` | A function to render each card. It receives the index of the card and a flag indicating whether the card is focused.                     | —       |
 | `windowSize`            | `number`                                           | Number of cards to display at once. Must be an odd number greater than 1. Adjusting this can help balance performance and UI smoothness. | `3`     |
 | `onIndexChangedWorklet` | `(index: number) => void`                          | A Reanimated worklet function called when the index changes. Use this callback to respond to changes in focus.                           | —       |
+| `initialIndex`          | `number`                                           | The index of the card that should be focused initially.                                                                                  | `0`     |
 
 ### Reference Methods
 

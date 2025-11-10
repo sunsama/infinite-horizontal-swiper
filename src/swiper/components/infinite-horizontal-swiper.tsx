@@ -12,7 +12,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import type { SwiperMethods, SwiperProps } from '../swiper.types';
-import { ACTIVATION_DISTANCE_IN_PX } from '../lib/constants';
+import { ACTIVATION_DISTANCE_IN_PX } from '../misc/constants';
 import { type LayoutChangeEvent, StyleSheet, View } from 'react-native';
 import useCardState from '../hooks/use-card-state';
 import determineTransition from '../worklets/determine-transition';
@@ -22,7 +22,10 @@ import useSwiperTransformStyle from '../hooks/use-swiper-transform-style';
 import useScrollToIndex from '../hooks/use-scroll-to-index';
 
 const InfiniteHorizontalSwiper = forwardRef<SwiperMethods, SwiperProps>(
-  ({ renderItem, windowSize = 3, onIndexChangedWorklet }, swiperRef) => {
+  (
+    { renderItem, windowSize = 3, onIndexChangedWorklet, initialIndex = 0 },
+    swiperRef
+  ) => {
     if (windowSize < 3 || windowSize % 2 === 0) {
       throw new Error('size must be an odd number greater than 1');
     }
@@ -36,7 +39,7 @@ const InfiniteHorizontalSwiper = forwardRef<SwiperMethods, SwiperProps>(
       setDimensions(event.nativeEvent.layout);
     }, []);
 
-    const cardState = useCardState(width, windowSize);
+    const cardState = useCardState({ initialIndex, width, windowSize });
     const cards = useCards(windowSize, renderItem, cardState);
     const finalX = useSharedValue(0);
     const contextStartX = useSharedValue(-1);

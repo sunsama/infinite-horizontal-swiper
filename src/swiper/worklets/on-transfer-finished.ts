@@ -1,6 +1,6 @@
+import type { CardState } from '../swiper.types';
 import offsetAdd from '../worklets/offset-add';
 import offsetSub from '../worklets/offset-sub';
-import type { CardState } from '../hooks/use-card-state';
 import type { SharedValue } from 'react-native-reanimated';
 
 function onTransferFinished({

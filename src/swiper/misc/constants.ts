@@ -1,0 +1,1 @@
+export const ACTIVATION_DISTANCE_IN_PX = 50;
