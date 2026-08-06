@@ -17,8 +17,10 @@ const RenderItemProxy = ({
   index: SharedValue<number>;
   activeIndex: SharedValue<number>;
 }) => {
-  const [indexNumber, setIndexNumber] = useState(0);
-  const [isFocused, setIsFocused] = useState(false);
+  const [indexNumber, setIndexNumber] = useState(() => index.value);
+  const [isFocused, setIsFocused] = useState(
+    () => index.value === activeIndex.value
+  );
 
   const original = useSharedValue<null | number>(null);
 
