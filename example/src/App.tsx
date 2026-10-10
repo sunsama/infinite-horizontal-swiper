@@ -20,23 +20,26 @@ export default function App() {
     console.log('index changed to', index);
   }, []);
 
-  const renderItem = useCallback((index: number, focused: boolean) => {
-    const styleView = [
-      styles.renderView,
-      {
-        backgroundColor: index % 2 === 0 ? 'blue' : 'red',
-      },
-    ];
+  const renderItem = useCallback(
+    (index: number, focused: boolean, visible: boolean) => {
+      const styleView = [
+        styles.renderView,
+        {
+          backgroundColor: index % 2 === 0 ? 'blue' : 'red',
+        },
+      ];
 
-    return (
-      <View style={styleView}>
-        <Text style={styles.renderText}>{index}</Text>
-        <Text style={styles.renderTextFocused}>
-          {focused ? '(is focused)' : ''}
-        </Text>
-      </View>
-    );
-  }, []);
+      return (
+        <View style={styleView}>
+          <Text style={styles.renderText}>{index}</Text>
+          <Text style={styles.renderTextFocused}>
+            {focused ? '(is focused)' : visible ? '(is visible)' : ''}
+          </Text>
+        </View>
+      );
+    },
+    []
+  );
 
   return (
     <GestureHandlerRootView>
@@ -44,7 +47,8 @@ export default function App() {
         <StatusBar style="auto" />
         <InfiniteHorizontalSwiper
           ref={swiperRef2}
-          windowSize={5}
+          windowSize={7}
+          visibleCount={3}
           renderItem={renderItem}
           onIndexChangedWorklet={onIndexChangedWorklet}
           initialIndex={12}

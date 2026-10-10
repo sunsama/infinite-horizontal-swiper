@@ -4,7 +4,6 @@ import Animated, {
   type SharedValue,
   useAnimatedReaction,
   useAnimatedStyle,
-  useSharedValue,
 } from 'react-native-reanimated';
 import type { RenderItem } from '../swiper.types';
 
@@ -12,22 +11,30 @@ const RenderItemProxy = ({
   renderItem,
   index,
   activeIndex,
+  visibleCount,
 }: {
   renderItem: RenderItem;
   index: SharedValue<number>;
   activeIndex: SharedValue<number>;
+  visibleCount: number;
 }) => {
-  const [indexNumber, setIndexNumber] = useState(() => index.value);
-  const [isFocused, setIsFocused] = useState(
-    () => index.value === activeIndex.value
-  );
-
-  const original = useSharedValue<null | number>(null);
+  const [state, setState] = useState(() => ({
+    indexNumber: index.value,
+    isFocused: index.value === activeIndex.value,
+    isVisible:
+      index.value >= activeIndex.value &&
+      index.value < activeIndex.value + visibleCount,
+  }));
 
   const updateIndexes = useCallback(
-    (newIndex: number, newActiveIndex: number) => {
-      setIsFocused(newIndex === newActiveIndex);
-      setIndexNumber(newIndex);
+    (indexNumber: number, isFocused: boolean, isVisible: boolean) => {
+      setState((prev) =>
+        prev.indexNumber === indexNumber &&
+        prev.isFocused === isFocused &&
+        prev.isVisible === isVisible
+          ? prev
+          : { indexNumber, isFocused, isVisible }
+      );
     },
     []
   );
@@ -38,25 +45,16 @@ const RenderItemProxy = ({
       activeIndex: activeIndex.value,
     }),
     ({ index: newIndex, activeIndex: newActiveIndex }) => {
-      if (original.value === null) {
-        original.value = newIndex;
-      }
-
-      // console.info(
-      //   "[RenderItemProxy] newIndex",
-      //   newIndex,
-      //   "activeIndex",
-      //   newActiveIndex,
-      //   "originalIndex",
-      //   original.value,
-      //   "focus",
-      //   newIndex === newActiveIndex,
-      // );
-      runOnJS(updateIndexes)(newIndex, newActiveIndex);
-    }
+      runOnJS(updateIndexes)(
+        newIndex,
+        newIndex === newActiveIndex,
+        newIndex >= newActiveIndex && newIndex < newActiveIndex + visibleCount
+      );
+    },
+    [visibleCount]
   );
 
-  return renderItem(indexNumber, isFocused);
+  return renderItem(state.indexNumber, state.isFocused, state.isVisible);
 };
 
 type CardProps = {
@@ -64,6 +62,8 @@ type CardProps = {
   index: SharedValue<number>;
   activeIndex: SharedValue<number>;
   translateX: SharedValue<number>;
+  cardWidth: number;
+  visibleCount: number;
 };
 
 const SwiperCard = ({
@@ -71,24 +71,20 @@ const SwiperCard = ({
   activeIndex,
   index,
   translateX,
+  cardWidth,
+  visibleCount,
 }: CardProps) => {
-  //#region Boilerplate
-  //#endregion
-
-  //#region Styles
   const transformStyle = useAnimatedStyle(
     () => ({
       position: 'absolute',
       left: 0,
-      right: 0,
+      width: cardWidth,
       top: 0,
       bottom: 0,
       transform: [{ translateX: translateX.value }],
     }),
-    [translateX]
+    [translateX, cardWidth]
   );
-
-  //#endregion
 
   return (
     <Animated.View style={transformStyle}>
@@ -96,6 +92,7 @@ const SwiperCard = ({
         renderItem={renderItem}
         activeIndex={activeIndex}
         index={index}
+        visibleCount={visibleCount}
       />
     </Animated.View>
   );

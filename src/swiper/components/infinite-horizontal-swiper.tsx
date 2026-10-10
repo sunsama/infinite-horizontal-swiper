@@ -23,11 +23,21 @@ import useScrollToIndex from '../hooks/use-scroll-to-index';
 
 const InfiniteHorizontalSwiper = forwardRef<SwiperMethods, SwiperProps>(
   (
-    { renderItem, windowSize = 3, onIndexChangedWorklet, initialIndex = 0 },
+    {
+      renderItem,
+      windowSize = 3,
+      onIndexChangedWorklet,
+      initialIndex = 0,
+      visibleCount = 1,
+    },
     swiperRef
   ) => {
     if (windowSize < 3 || windowSize % 2 === 0) {
       throw new Error('size must be an odd number greater than 1');
+    }
+
+    if (visibleCount < 1 || windowSize < visibleCount * 2 + 1) {
+      throw new Error('windowSize must be at least 2 * visibleCount + 1');
     }
 
     const [{ width, height }, setDimensions] = useState({
@@ -39,8 +49,19 @@ const InfiniteHorizontalSwiper = forwardRef<SwiperMethods, SwiperProps>(
       setDimensions(event.nativeEvent.layout);
     }, []);
 
-    const cardState = useCardState({ initialIndex, width, windowSize });
-    const cards = useCards(windowSize, renderItem, cardState);
+    const cardWidth = width / visibleCount;
+    const cardState = useCardState({
+      initialIndex,
+      width: cardWidth,
+      windowSize,
+    });
+    const cards = useCards(
+      windowSize,
+      renderItem,
+      cardState,
+      cardWidth,
+      visibleCount
+    );
     const finalX = useSharedValue(0);
     const contextStartX = useSharedValue(-1);
     const contextEndX = useSharedValue(-1);
@@ -91,7 +112,7 @@ const InfiniteHorizontalSwiper = forwardRef<SwiperMethods, SwiperProps>(
         determineTransition(cardState, windowSize, direction);
 
         finalX.value = withSpring(
-          direction * width,
+          direction * cardWidth,
           {
             mass: 1,
             stiffness: 300,
@@ -103,7 +124,7 @@ const InfiniteHorizontalSwiper = forwardRef<SwiperMethods, SwiperProps>(
           },
           () => {
             onTransferFinished({
-              width,
+              width: cardWidth,
               finalX,
               windowSize,
               cardState,
@@ -114,7 +135,8 @@ const InfiniteHorizontalSwiper = forwardRef<SwiperMethods, SwiperProps>(
       });
 
     const scrollToIndex = useScrollToIndex({
-      width,
+      width: cardWidth,
+      visibleCount,
       finalX,
       windowSize,
       cardState,
@@ -144,10 +166,11 @@ export default memo(InfiniteHorizontalSwiper, (prevProps, nextProps) => {
   return (
     prevProps.renderItem === nextProps.renderItem &&
     prevProps.windowSize === nextProps.windowSize &&
+    prevProps.visibleCount === nextProps.visibleCount &&
     prevProps.onIndexChangedWorklet === nextProps.onIndexChangedWorklet
   );
 });
 
 const styles = StyleSheet.create({
-  mainLayout: { alignSelf: 'stretch', flex: 1 },
+  mainLayout: { alignSelf: 'stretch', flex: 1, overflow: 'hidden' },
 });

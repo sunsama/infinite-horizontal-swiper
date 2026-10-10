@@ -1,5 +1,4 @@
 import { useCallback } from 'react';
-import determineTransition from '../worklets/determine-transition';
 import { type SharedValue, withSpring } from 'react-native-reanimated';
 import onTransferFinished from '../worklets/on-transfer-finished';
 import type { CardState } from '../swiper.types';
@@ -7,6 +6,7 @@ import type { CardState } from '../swiper.types';
 const useScrollToIndex = ({
   width,
   windowSize,
+  visibleCount,
   finalX,
   cardState,
 }: {
@@ -14,26 +14,26 @@ const useScrollToIndex = ({
   cardState: CardState;
   finalX: SharedValue<number>;
   windowSize: number;
+  visibleCount: number;
 }) =>
   useCallback(
     (newIndex: number) => {
       const direction = newIndex > cardState.index.value ? -1 : 1;
+      const half = Math.floor(windowSize / 2);
 
       cardState.index.value = newIndex;
-      const half = Math.ceil(windowSize / 2);
-      const parsedIndex = direction === -1 ? newIndex - half : newIndex;
 
-      const cardOffsetIndex = cardState.offsets.findIndex(
-        (offset) => offset.value === half - (direction === -1 ? 0 : 2)
-      );
+      // Put the target cards in the slots that slide into view, so the
+      // animation shows the right content.
+      const firstIncomingOffset = half - direction;
 
-      // Only change the relevant index for the card we're going to show, we'll
-      // update the rest of the cards in the animation callback.
-      // We do this so that the animation looks correct.
-      cardState.cardIndexes[cardOffsetIndex]!.value =
-        direction === 1 ? parsedIndex : newIndex;
+      cardState.offsets.forEach((offset, i) => {
+        const k = offset.value - firstIncomingOffset;
 
-      determineTransition(cardState, windowSize, direction);
+        if (k >= 0 && k < visibleCount) {
+          cardState.cardIndexes[i]!.value = newIndex + k;
+        }
+      });
 
       finalX.value = withSpring(
         direction * width,
@@ -47,14 +47,9 @@ const useScrollToIndex = ({
           velocity: 50,
         },
         () => {
-          // Now change all indexes to the correct value
           cardState.cardIndexes.forEach((cardIndex, i) => {
-            const offset = cardState.offsets[i]!.value;
-
             cardIndex.value =
-              direction === -1
-                ? parsedIndex + offset
-                : newIndex - (cardOffsetIndex - i);
+              newIndex + cardState.offsets[i]!.value - firstIncomingOffset;
           });
 
           onTransferFinished({
@@ -67,7 +62,7 @@ const useScrollToIndex = ({
         }
       );
     },
-    [width, cardState, finalX, windowSize]
+    [width, cardState, finalX, windowSize, visibleCount]
   );
 
 export default useScrollToIndex;
