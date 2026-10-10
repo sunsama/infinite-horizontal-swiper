@@ -44,10 +44,11 @@ Check out the app in the `example` folder for a working demo. The example app de
 
 | Prop                    | Type                                               | Description                                                                                                                              | Default |
 |-------------------------|----------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------|---------|
-| `renderItem`            | `(index: number, isFocused: boolean) => ReactNode` | A function to render each card. It receives the index of the card and a flag indicating whether the card is focused.                     | —       |
+| `renderItem`            | `(index: number, isFocused: boolean, isVisible: boolean) => ReactNode` | A function to render each card. It receives the index of the card, a flag for the focused (leftmost) card, and a flag for every visible card. | —       |
 | `windowSize`            | `number`                                           | Number of cards to display at once. Must be an odd number greater than 1. Adjusting this can help balance performance and UI smoothness. | `3`     |
 | `onIndexChangedWorklet` | `(index: number) => void`                          | A Reanimated worklet function called when the index changes. Use this callback to respond to changes in focus.                           | —       |
 | `initialIndex`          | `number`                                           | The index of the card that should be focused initially.                                                                                  | `0`     |
+| `visibleCount`          | `number`                                           | Number of cards shown side by side. Each card is `width / visibleCount` wide; one swipe moves one card. `windowSize` must be at least `2 * visibleCount + 1`. | `1`     |
 
 ### Reference Methods
 

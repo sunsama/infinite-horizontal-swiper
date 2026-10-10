@@ -1,7 +1,11 @@
 import { type ReactNode } from 'react';
 import type { SharedValue } from 'react-native-reanimated';
 
-export type RenderItem = (index: number, isFocused: boolean) => ReactNode;
+export type RenderItem = (
+  index: number,
+  isFocused: boolean,
+  isVisible: boolean
+) => ReactNode;
 
 export type SwiperProps = {
   /**
@@ -30,6 +34,13 @@ export type SwiperProps = {
    * @default 0
    */
   initialIndex?: number;
+  /**
+   * The number of cards visible side by side. The focused card is the leftmost
+   * one. `windowSize` must be at least `2 * visibleCount + 1`.
+   *
+   * @default 1
+   */
+  visibleCount?: number;
 };
 
 export interface SwiperMethods {
