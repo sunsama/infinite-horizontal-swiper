@@ -41,13 +41,10 @@ const InfiniteHorizontalSwiper = forwardRef<SwiperMethods, SwiperProps>(
       throw new Error('windowSize must be at least 2 * visibleCount + 1');
     }
 
-    const [{ width: measuredWidth, height }, setDimensions] = useState({
-      width: 0,
-      height: 0,
-    });
+    const [measuredWidth, setMeasuredWidth] = useState(0);
 
     const onLayout = useCallback((event: LayoutChangeEvent) => {
-      setDimensions(event.nativeEvent.layout);
+      setMeasuredWidth(event.nativeEvent.layout.width);
     }, []);
 
     const width = widthProp ?? measuredWidth;
@@ -152,7 +149,7 @@ const InfiniteHorizontalSwiper = forwardRef<SwiperMethods, SwiperProps>(
       [scrollToIndex]
     );
 
-    const transformStyle = useSwiperTransformStyle(width, height, finalX);
+    const transformStyle = useSwiperTransformStyle(width, finalX);
 
     return (
       <View onLayout={onLayout} style={styles.mainLayout}>
