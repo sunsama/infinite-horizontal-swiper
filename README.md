@@ -49,6 +49,7 @@ Check out the app in the `example` folder for a working demo. The example app de
 | `onIndexChangedWorklet` | `(index: number) => void`                          | A Reanimated worklet function called when the index changes. Use this callback to respond to changes in focus.                           | —       |
 | `initialIndex`          | `number`                                           | The index of the card that should be focused initially.                                                                                  | `0`     |
 | `visibleCount`          | `number`                                           | Number of cards shown side by side. Each card is `width / visibleCount` wide; one swipe moves one card. `windowSize` must be at least `2 * visibleCount + 1`. | `1`     |
+| `width`                 | `number`                                           | Width in pixels. Overrides the measured width, so a parent that knows its size avoids a frame with the old width after a resize. | measured |
 
 ### Reference Methods
 
