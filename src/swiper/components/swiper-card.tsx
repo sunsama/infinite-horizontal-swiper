@@ -20,20 +20,16 @@ const RenderItemProxy = ({
 }) => {
   const [state, setState] = useState(() => ({
     indexNumber: index.value,
-    isFocused: index.value === activeIndex.value,
-    isVisible:
-      index.value >= activeIndex.value &&
-      index.value < activeIndex.value + visibleCount,
+    activeIndexNumber: activeIndex.value,
   }));
 
   const updateIndexes = useCallback(
-    (indexNumber: number, isFocused: boolean, isVisible: boolean) => {
+    (indexNumber: number, activeIndexNumber: number) => {
       setState((prev) =>
         prev.indexNumber === indexNumber &&
-        prev.isFocused === isFocused &&
-        prev.isVisible === isVisible
+        prev.activeIndexNumber === activeIndexNumber
           ? prev
-          : { indexNumber, isFocused, isVisible }
+          : { indexNumber, activeIndexNumber }
       );
     },
     []
@@ -45,16 +41,17 @@ const RenderItemProxy = ({
       activeIndex: activeIndex.value,
     }),
     ({ index: newIndex, activeIndex: newActiveIndex }) => {
-      runOnJS(updateIndexes)(
-        newIndex,
-        newIndex === newActiveIndex,
-        newIndex >= newActiveIndex && newIndex < newActiveIndex + visibleCount
-      );
-    },
-    [visibleCount]
+      runOnJS(updateIndexes)(newIndex, newActiveIndex);
+    }
   );
 
-  return renderItem(state.indexNumber, state.isFocused, state.isVisible);
+  const offset = state.indexNumber - state.activeIndexNumber;
+
+  return renderItem(
+    state.indexNumber,
+    offset === 0,
+    offset >= 0 && offset < visibleCount
+  );
 };
 
 type CardProps = {
