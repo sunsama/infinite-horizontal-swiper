@@ -1,17 +1,15 @@
 import { type SharedValue, useAnimatedStyle } from 'react-native-reanimated';
 
-const useSwiperTransformStyle = (
-  width: number,
-  height: number,
-  finalX: SharedValue<number>
-) =>
+// Height comes from flex, not from onLayout, so the swiper refits in the same
+// layout pass when its parent changes size.
+const useSwiperTransformStyle = (width: number, finalX: SharedValue<number>) =>
   useAnimatedStyle(
     () => ({
       width,
-      height,
+      flex: 1,
       transform: [{ translateX: finalX.value }],
     }),
-    [width, height]
+    [width]
   );
 
 export default useSwiperTransformStyle;
