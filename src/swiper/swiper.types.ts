@@ -41,6 +41,12 @@ export type SwiperProps = {
    * @default 1
    */
   visibleCount?: number;
+  /**
+   * Width of the swiper in pixels. When set, it is used instead of the
+   * measured width, so a parent that knows its width avoids a frame with the
+   * old width after a resize.
+   */
+  width?: number;
 };
 
 export interface SwiperMethods {

@@ -29,6 +29,7 @@ const InfiniteHorizontalSwiper = forwardRef<SwiperMethods, SwiperProps>(
       onIndexChangedWorklet,
       initialIndex = 0,
       visibleCount = 1,
+      width: widthProp,
     },
     swiperRef
   ) => {
@@ -40,7 +41,7 @@ const InfiniteHorizontalSwiper = forwardRef<SwiperMethods, SwiperProps>(
       throw new Error('windowSize must be at least 2 * visibleCount + 1');
     }
 
-    const [{ width, height }, setDimensions] = useState({
+    const [{ width: measuredWidth, height }, setDimensions] = useState({
       width: 0,
       height: 0,
     });
@@ -49,6 +50,7 @@ const InfiniteHorizontalSwiper = forwardRef<SwiperMethods, SwiperProps>(
       setDimensions(event.nativeEvent.layout);
     }, []);
 
+    const width = widthProp ?? measuredWidth;
     const cardWidth = width / visibleCount;
     const cardState = useCardState({
       initialIndex,
@@ -167,6 +169,7 @@ export default memo(InfiniteHorizontalSwiper, (prevProps, nextProps) => {
     prevProps.renderItem === nextProps.renderItem &&
     prevProps.windowSize === nextProps.windowSize &&
     prevProps.visibleCount === nextProps.visibleCount &&
+    prevProps.width === nextProps.width &&
     prevProps.onIndexChangedWorklet === nextProps.onIndexChangedWorklet
   );
 });
